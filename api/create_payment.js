@@ -54,5 +54,9 @@ export default async function handler(req, res) {
   } catch (e) {
     console.error(e);
     return res.status(500).json({ error: "Falha ao criar pagamento", message: e.message });
+    
   }
 }
+
+// Força runtime Node 20 no Vercel
+export const config = { runtime: "nodejs20.x" };
