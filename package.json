@@ -1,8 +1,13 @@
 {
-  "name": "kitysexy-mp-backend",
+  "name": "kitsexypay",
   "version": "1.0.0",
+  "private": true,
   "type": "module",
   "dependencies": {
     "mercadopago": "2.3.6"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }
+
