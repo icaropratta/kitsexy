@@ -1,7 +1,6 @@
-// api/create_payment.js
 import MercadoPagoConfig, { Payment } from "mercadopago";
 
-// Configuração de CORS (libera apenas seu domínio em produção)
+// CORS (na produção, deixe apenas seu domínio Wix)
 const allowedOrigin = process.env.ALLOWED_ORIGIN || "*";
 
 export default async function handler(req, res) {
@@ -14,23 +13,21 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Use POST" });
 
   try {
-    // Instancia o Mercado Pago com seu Access Token
     const mp = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN });
 
     const {
-      token,                 // token do cartão
-      transaction_amount,    // valor da compra
-      installments,          // número de parcelas
-      payment_method_id,     // ex: 'master', 'visa'
-      description,           // descrição do produto
-      payer                  // dados do comprador
+      token,                 // token do cartão (cartão)
+      transaction_amount,    // número (ex.: 297.00)
+      installments,          // número (ex.: 1)
+      payment_method_id,     // 'master', 'visa' (opcional)
+      description,           // texto
+      payer                  // { email, first_name, last_name, identification, address }
     } = req.body || {};
 
     if (!transaction_amount || !payer) {
       return res.status(400).json({ error: "transaction_amount e payer são obrigatórios" });
     }
 
-    // Cria o pagamento
     const payment = new Payment(mp);
     const resp = await payment.create({
       body: {
@@ -43,11 +40,10 @@ export default async function handler(req, res) {
       }
     });
 
-    // Resposta simplificada para o frontend
     return res.status(200).json({
       id: resp.id,
-      status: resp.status,
-      status_detail: resp.status_detail,
+      status: resp.status,               // approved | rejected | in_process
+      status_detail: resp.status_detail, // accredited | motivo
       live_mode: resp.live_mode
     });
   } catch (e) {
@@ -56,5 +52,5 @@ export default async function handler(req, res) {
   }
 }
 
-// 👇 Força runtime Node 20 no Vercel
+// força Node 20
 export const config = { runtime: "nodejs20.x" };
